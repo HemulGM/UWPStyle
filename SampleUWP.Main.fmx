@@ -15,8 +15,8 @@ object FormMain: TFormMain
   object TimerRepaint: TTimer
     Interval = 10
     OnTimer = TimerRepaintTimer
-    Left = 504
-    Top = 416
+    Left = 384
+    Top = 248
   end
   object Layout2: TLayout
     Align = Client
@@ -1713,7 +1713,7 @@ object FormMain: TFormMain
   end
   object TimerRecalcPos: TTimer
     Enabled = False
-    Interval = 500
+    Interval = 50
     OnTimer = TimerRecalcPosTimer
     Left = 596
     Top = 205
