@@ -1,9 +1,10 @@
-unit SampleUWP.Main;
+п»їunit SampleUWP.Main;
 
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  System.SysUtils, System.Types, System.UITypes, System.Classes,
+  System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
   FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Effects, FMX.Ani,
   Dwmapi, Winapi.Windows, Winapi.Messages;
@@ -71,12 +72,15 @@ type
     Layout4: TLayout;
     Layout5: TLayout;
     procedure TimerRepaintTimer(Sender: TObject);
-    procedure RectangleFirstMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-    procedure RectangleFirstMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+    procedure RectangleFirstMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Single);
+    procedure RectangleFirstMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Single);
     procedure Layout1Resized(Sender: TObject);
     procedure TimerRecalcPosTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure RectangleFirstPaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
+    procedure RectangleFirstPaint(Sender: TObject; Canvas: TCanvas;
+      const ARect: TRectF);
     procedure Rectangle12MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Single);
     procedure Layout4MouseDown(Sender: TObject; Button: TMouseButton;
@@ -97,7 +101,9 @@ var
   FormMain: TFormMain;
 
 var
-  SetWindowCompositionAttribute: function(Wnd: HWND; const AttrData: TWinCompAttrData): BOOL; stdcall = nil;
+  SetWindowCompositionAttribute: function(Wnd: HWND;
+    const AttrData: TWinCompAttrData): BOOL;
+stdcall = nil;
 
 implementation
 
@@ -120,7 +126,7 @@ const
   ACCENT_ENABLE_TRANSPARENTGRADIENT = 2;
   ACCENT_ENABLE_BLURBEHIND = 3;
   ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
-  //Хз, что за флаги (но пока не принципиально)
+  // РҐР·, С‡С‚Рѕ Р·Р° С„Р»Р°РіРё (РЅРѕ РїРѕРєР° РЅРµ РїСЂРёРЅС†РёРїРёР°Р»СЊРЅРѕ)
   DrawLeftBorder = $20;
   DrawTopBorder = $40;
   DrawRightBorder = $80;
@@ -133,16 +139,18 @@ begin
   DWM := LoadLibrary('user32.dll');
   try
     if @SetWindowCompositionAttribute = nil then
-      @SetWindowCompositionAttribute := GetProcAddress(DWM, 'SetWindowCompositionAttribute');
+      @SetWindowCompositionAttribute :=
+        GetProcAddress(DWM, 'SetWindowCompositionAttribute');
     if @SetWindowCompositionAttribute <> nil then
     begin
-      //Цвет акрил с цветом
-      //Accent.GradientColor := $AA000000;
-      //Accent.AccentState := ACCENT_ENABLE_ACRYLICBLURBEHIND;
-      //Акрил без цвета
+      // Р¦РІРµС‚ Р°РєСЂРёР» СЃ С†РІРµС‚РѕРј
+      // Accent.GradientColor := $AA000000;
+      // Accent.AccentState := ACCENT_ENABLE_ACRYLICBLURBEHIND;
+      // РђРєСЂРёР» Р±РµР· С†РІРµС‚Р°
       Accent.AccentState := ACCENT_ENABLE_BLURBEHIND;
 
-      Accent.AccentFlags := DrawLeftBorder or DrawTopBorder or DrawRightBorder or DrawBottomBorder;
+      Accent.AccentFlags := DrawLeftBorder or DrawTopBorder or
+        DrawRightBorder or DrawBottomBorder;
       CompAttrData.Attribute := WCA_ACCENT_POLICY;
       CompAttrData.DataSize := SizeOf(Accent);
       CompAttrData.Data := @Accent;
@@ -157,13 +165,13 @@ procedure TFormMain.FormCreate(Sender: TObject);
 begin
   EnableBlur;
   VertScrollBox1.AniCalculations.Animation := True;
-  //Расставим всё без анимации
+  // Р Р°СЃСЃС‚Р°РІРёРј РІСЃС‘ Р±РµР· Р°РЅРёРјР°С†РёРё
   TimerRecalcPosTimer(nil);
 end;
 
 procedure TFormMain.Layout1Resized(Sender: TObject);
 begin
-  //Сброс для перестановки
+  // РЎР±СЂРѕСЃ РґР»СЏ РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё
   TimerRecalcPos.Enabled := False;
   TimerRecalcPos.Enabled := True;
 end;
@@ -180,51 +188,57 @@ begin
   StartWindowDrag;
 end;
 
-procedure TFormMain.RectangleFirstMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-//Коэффициент скейла
+procedure TFormMain.RectangleFirstMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+// РљРѕСЌС„С„РёС†РёРµРЅС‚ СЃРєРµР№Р»Р°
 const
   Rate = 0.96;
 var
   Rectangle: TRectangle absolute Sender;
   P: TPointF;
 begin
-  //Скейлим и смещаем элемент (эффект нажатия)
+  // РЎРєРµР№Р»РёРј Рё СЃРјРµС‰Р°РµРј СЌР»РµРјРµРЅС‚ (СЌС„С„РµРєС‚ РЅР°Р¶Р°С‚РёСЏ)
   Rectangle.Scale.Point := TPointF.Create(Rate, Rate);
   P := Rectangle.Position.Point;
-  P.Offset((Rectangle.Width - Rectangle.Width * Rate) / 2, (Rectangle.Height - Rectangle.Height * Rate) / 2);
+  P.Offset((Rectangle.Width - Rectangle.Width * Rate) / 2,
+    (Rectangle.Height - Rectangle.Height * Rate) / 2);
   Rectangle.Position.Point := P;
   SetCaptured(Rectangle);
 end;
 
-procedure TFormMain.RectangleFirstMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-//Коэффициент скейла
+procedure TFormMain.RectangleFirstMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Single);
+// РљРѕСЌС„С„РёС†РёРµРЅС‚ СЃРєРµР№Р»Р°
 const
   Rate = 0.96;
 var
   Rectangle: TRectangle absolute Sender;
   P: TPointF;
 begin
-  //Убираем скейл, возвращаем смещение
+  // РЈР±РёСЂР°РµРј СЃРєРµР№Р», РІРѕР·РІСЂР°С‰Р°РµРј СЃРјРµС‰РµРЅРёРµ
   Rectangle.Scale.Point := TPointF.Create(1, 1);
   P := Rectangle.Position.Point;
-  P.Offset(-(Rectangle.Width - Rectangle.Width * Rate) / 2, -(Rectangle.Height - Rectangle.Height * Rate) / 2);
+  P.Offset(-(Rectangle.Width - Rectangle.Width * Rate) / 2,
+    -(Rectangle.Height - Rectangle.Height * Rate) / 2);
   Rectangle.Position.Point := P;
 end;
 
-procedure TFormMain.RectangleFirstPaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
+procedure TFormMain.RectangleFirstPaint(Sender: TObject; Canvas: TCanvas;
+  const ARect: TRectF);
 var
   Rectangle: TRectangle absolute Sender;
 begin
   with Rectangle.AbsoluteToLocal(ScreenToClient(Screen.MousePos)) do
   begin
-    // Смещение точки радиального градиента
+    // РЎРјРµС‰РµРЅРёРµ С‚РѕС‡РєРё СЂР°РґРёР°Р»СЊРЅРѕРіРѕ РіСЂР°РґРёРµРЅС‚Р°
     Rectangle.Stroke.Gradient.RadialTransform.RotationCenter.Point :=
-      TPointF.Create(((100 / Rectangle.Width) * X) / 100, ((100 / Rectangle.Height) * Y) / 100);
+      TPointF.Create(((100 / Rectangle.Width) * X) / 100,
+      ((100 / Rectangle.Height) * Y) / 100);
 
-    //Толщина (просто чтоб не задавать в дизайнере)
+    // РўРѕР»С‰РёРЅР° (РїСЂРѕСЃС‚Рѕ С‡С‚РѕР± РЅРµ Р·Р°РґР°РІР°С‚СЊ РІ РґРёР·Р°Р№РЅРµСЂРµ)
     Rectangle.Stroke.Thickness := 1;
 
-    //Рамка если навели на элемент
+    // Р Р°РјРєР° РµСЃР»Рё РЅР°РІРµР»Рё РЅР° СЌР»РµРјРµРЅС‚
     if Rectangle.AbsoluteRect.Contains(ScreenToClient(Screen.MousePos)) then
       Rectangle.Stroke.Gradient.Color := $404B4B4B
     else
@@ -238,7 +252,7 @@ begin
 end;
 
 procedure TFormMain.TimerRecalcPosTimer(Sender: TObject);
-//Отступы в сетке
+// РћС‚СЃС‚СѓРїС‹ РІ СЃРµС‚РєРµ
 const
   OffsetX = 10;
   OffsetY = 10;
@@ -247,7 +261,7 @@ var
   NC, NR: Single;
   Control: TRectangle;
 begin
-  //Расстановка объектов по сетке. С анимацией, если Sender <> nil
+  // Р Р°СЃСЃС‚Р°РЅРѕРІРєР° РѕР±СЉРµРєС‚РѕРІ РїРѕ СЃРµС‚РєРµ. РЎ Р°РЅРёРјР°С†РёРµР№, РµСЃР»Рё Sender <> nil
   TimerRecalcPos.Enabled := False;
   for i := 0 to Pred(VertScrollBox1.Content.ControlsCount) do
     if VertScrollBox1.Content.Controls[i] is TRectangle then
@@ -258,14 +272,17 @@ begin
       begin
         R := i div WCount;
         C := i mod WCount;
-        if (C <> Trunc(Control.Margins.Rect.Left)) or (R <> Trunc(Control.Margins.Rect.Top)) then
+        if (C <> Trunc(Control.Margins.Rect.Left)) or
+          (R <> Trunc(Control.Margins.Rect.Top)) then
         begin
           NC := C * (Control.Width + OffsetX * 2) + OffsetX;
           NR := R * (Control.Height + OffsetY * 2) + OffsetY;
           if Sender <> nil then
           begin
-            TAnimator.AnimateFloat(Control, 'Position.X', NC, 0.5, TAnimationType.out, TInterpolationType.Circular);
-            TAnimator.AnimateFloat(Control, 'Position.Y', NR, 0.5, TAnimationType.out, TInterpolationType.Circular);
+            TAnimator.AnimateFloat(Control, 'Position.X', NC, 0.5,
+              TAnimationType.out, TInterpolationType.Circular);
+            TAnimator.AnimateFloat(Control, 'Position.Y', NR, 0.5,
+              TAnimationType.out, TInterpolationType.Circular);
           end
           else
           begin
@@ -279,4 +296,3 @@ begin
 end;
 
 end.
-
