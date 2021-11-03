@@ -3,8 +3,7 @@
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes,
-  System.Variants,
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
   FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Effects, FMX.Ani,
   Dwmapi, Winapi.Windows, Winapi.Messages;
@@ -72,19 +71,15 @@ type
     Layout4: TLayout;
     Layout5: TLayout;
     procedure TimerRepaintTimer(Sender: TObject);
-    procedure RectangleFirstMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Single);
-    procedure RectangleFirstMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Single);
+    procedure RectangleFirstMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+    procedure RectangleFirstMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure Layout1Resized(Sender: TObject);
     procedure TimerRecalcPosTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure RectangleFirstPaint(Sender: TObject; Canvas: TCanvas;
-      const ARect: TRectF);
-    procedure Rectangle12MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Single);
-    procedure Layout4MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Single);
+    procedure RectangleFirstPaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
+    procedure Rectangle12MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+    procedure Layout4MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+    procedure FormResize(Sender: TObject);
   private
     procedure EnableBlur;
   public
@@ -101,9 +96,7 @@ var
   FormMain: TFormMain;
 
 var
-  SetWindowCompositionAttribute: function(Wnd: HWND;
-    const AttrData: TWinCompAttrData): BOOL;
-stdcall = nil;
+  SetWindowCompositionAttribute: function(Wnd: HWND; const AttrData: TWinCompAttrData): BOOL; stdcall = nil;
 
 implementation
 
@@ -169,6 +162,11 @@ begin
   TimerRecalcPosTimer(nil);
 end;
 
+procedure TFormMain.FormResize(Sender: TObject);
+begin
+  Application.ProcessMessages;
+end;
+
 procedure TFormMain.Layout1Resized(Sender: TObject);
 begin
   // Сброс для перестановки
@@ -176,20 +174,17 @@ begin
   TimerRecalcPos.Enabled := True;
 end;
 
-procedure TFormMain.Layout4MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Single);
+procedure TFormMain.Layout4MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
   StartWindowResize;
 end;
 
-procedure TFormMain.Rectangle12MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Single);
+procedure TFormMain.Rectangle12MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
   StartWindowDrag;
 end;
 
-procedure TFormMain.RectangleFirstMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+procedure TFormMain.RectangleFirstMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 // Коэффициент скейла
 const
   Rate = 0.96;
@@ -206,8 +201,7 @@ begin
   SetCaptured(Rectangle);
 end;
 
-procedure TFormMain.RectangleFirstMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Single);
+procedure TFormMain.RectangleFirstMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 // Коэффициент скейла
 const
   Rate = 0.96;
@@ -223,8 +217,7 @@ begin
   Rectangle.Position.Point := P;
 end;
 
-procedure TFormMain.RectangleFirstPaint(Sender: TObject; Canvas: TCanvas;
-  const ARect: TRectF);
+procedure TFormMain.RectangleFirstPaint(Sender: TObject; Canvas: TCanvas; const ARect: TRectF);
 var
   Rectangle: TRectangle absolute Sender;
 begin
@@ -296,3 +289,4 @@ begin
 end;
 
 end.
+

@@ -1,7 +1,6 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  BorderStyle = None
   ClientHeight = 683
   ClientWidth = 999
   Fill.Color = claNull
@@ -11,6 +10,7 @@ object FormMain: TFormMain
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   OnCreate = FormCreate
+  OnResize = FormResize
   DesignerMasterStyle = 0
   object TimerRepaint: TTimer
     Interval = 10
@@ -30,11 +30,10 @@ object FormMain: TFormMain
       Align = Contents
       Fill.Color = x96000000
       HitTest = False
-      Size.Width = 912.000000000000000000
-      Size.Height = 620.000000000000000000
+      Size.Width = 999.000000000000000000
+      Size.Height = 683.000000000000000000
       Size.PlatformDefault = False
       Stroke.Kind = None
-      Visible = False
     end
     object Rectangle12: TRectangle
       Align = Contents
