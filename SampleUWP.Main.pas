@@ -170,7 +170,7 @@ end;
 procedure TFormMain.Layout1Resized(Sender: TObject);
 begin
   // Сброс для перестановки
-  TimerRecalcPos.Enabled := False;
+ // TimerRecalcPos.Enabled := False;
   TimerRecalcPos.Enabled := True;
 end;
 
